@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: availability-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: availability-service
+  template:
+    metadata:
+      labels:
+        app: availability-service
+    spec:
+      containers:
+      - name: availability-service
+        image: ghcr.io/your-org/availability-service:latest
+        ports:
+        - containerPort: 5004
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: availability-service
+spec:
+  selector:
+    app: availability-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5004
